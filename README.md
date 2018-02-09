@@ -10,7 +10,7 @@
 - https://stackoverflow.com/users/story/2533290 - That's me, SO
 
 
-#### Screenshots (600x1113)
+#### Screenshots (300x539)
 
 ![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/screenshots/sc001.png "LD2 - Map")
 ![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/screenshots/sc002.png "LD2 - Settings")
