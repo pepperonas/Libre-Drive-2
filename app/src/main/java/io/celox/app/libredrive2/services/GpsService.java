@@ -28,17 +28,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.NonNull;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.pepperonas.andbasx.base.ToastUtils;
 import com.pepperonas.jbasx.math.GeographicUtils;
@@ -57,8 +56,7 @@ import io.celox.app.libredrive2.utils.DatabaseCtrls;
  * <a href="mailto:martin.pfeffer@celox.io">martin.pfeffer@celox.io</a>
  * @see <a href="https://celox.io">https://celox.io</a>
  */
-public class GpsService extends Service implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class GpsService extends Service {
 
     private static final String TAG = "GpsService";
 
@@ -67,24 +65,85 @@ public class GpsService extends Service implements GoogleApiClient.ConnectionCal
 
     private static final int START_FOREGROUND_ID = 1;
 
-    private GoogleApiClient mGoogleApiClient;
     private DatabaseCtrls mDatabaseCtrls;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate: ");
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
         mDatabaseCtrls = new DatabaseCtrls(this);
 
-        mGoogleApiClient.connect();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ToastUtils.toastLongFromBackground(R.string.permission_required_location);
+            sendBroadcastGpsState("CONNECTION FAILED (missing permissions)");
+            return;
+        }
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(GPS_UPDATE_FREQUENCY);
+        locationRequest.setFastestInterval(GPS_UPDATE_FREQUENCY - GPS_OFFSET_TIME);
+
+        mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
+        //        mFusedLocationClient.getLastLocation()
+        //                .addOnSuccessListener(new OnSuccessListener<Location>() {
+        //                    @Override
+        //                    public void onSuccess(Location location) {
+        //                        if (location != null) {
+        //                        }
+        //                    }
+        //                });
     }
+
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            for (Location location : locationResult.getLocations()) {
+                List<Ctrl> ctrls = new ArrayList<>();
+                if (mDatabaseCtrls != null) {
+                    ctrls = mDatabaseCtrls.getCtrlsInArea(location.getLatitude(), location.getLongitude(),
+                            Const.CTRL_WARN_DISTANCE_IN_METERS);
+                    Log.w(TAG, "onLocationChanged: ctrls=" + ctrls.size());
+                }
+
+                Intent gpsLocation = new Intent(Const.FILTER_LOCATION_BROADCAST);
+                gpsLocation.putExtra("lat", location.getLatitude());
+                gpsLocation.putExtra("lng", location.getLongitude());
+                gpsLocation.putExtra("speed_ms", location.getSpeed());
+                gpsLocation.putExtra("accuracy", location.getAccuracy());
+                sendBroadcast(gpsLocation);
+
+                if (ctrls.size() > 0) {
+                    Ctrl closestCtrl = null;
+                    int minDist = Integer.MAX_VALUE;
+                    for (Ctrl ctrl : ctrls) {
+                        int tmpDist = (int) GeographicUtils.distanceBetweenGeoPositionsInMeters(
+                                ctrl.getLatLng().latitude, ctrl.getLatLng().longitude,
+                                location.getLatitude(), location.getLongitude());
+                        Log.d(TAG, "onLocationChanged: tmpDist=" + tmpDist);
+                        if (tmpDist < minDist) {
+                            minDist = tmpDist;
+                            closestCtrl = ctrl;
+                            Log.i(TAG, "onLocationChanged: found new closest ctrl: " + closestCtrl.toString());
+                        }
+                    }
+
+                    if (closestCtrl != null) {
+                        Intent ctrlWarning = new Intent(Const.FILTER_WARNING_CTRL);
+                        ctrlWarning.putExtra("ctrl_speed", closestCtrl.getSpeed());
+                        ctrlWarning.putExtra("ctrl_description", closestCtrl.getDescription());
+                        ctrlWarning.putExtra("distance", minDist);
+                        sendBroadcast(ctrlWarning);
+                    } else {
+                        Log.w(TAG, "onLocationChanged: closestCtrl is null, this should not happen..");
+                    }
+                }
+            }
+        }
+    };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -108,7 +167,7 @@ public class GpsService extends Service implements GoogleApiClient.ConnectionCal
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         Notification notification;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notification = new Notification.Builder(getApplicationContext())
+            notification = new Notification.Builder(getApplicationContext(), channelId)
                     .setContentTitle(getString(R.string.gps_service_notification_title))
                     .setChannelId(channelId)
                     .setContentText(getString(R.string.service_notification_content))
@@ -137,97 +196,15 @@ public class GpsService extends Service implements GoogleApiClient.ConnectionCal
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
 
-        // disconnecting the client invalidates it
-        mGoogleApiClient.disconnect();
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
         super.onDestroy();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.i(TAG, "onLocationChanged: ");
-
-        if (location != null) {
-            List<Ctrl> ctrls = new ArrayList<>();
-            if (mDatabaseCtrls != null) {
-                ctrls = mDatabaseCtrls.getCtrlsInArea(location.getLatitude(), location.getLongitude(), Const.CTRL_WARN_DISTANCE_IN_METERS);
-                Log.w(TAG, "onLocationChanged: ctrls=" + ctrls.size());
-            }
-
-            Intent gpsLocation = new Intent(Const.FILTER_LOCATION_BROADCAST);
-            gpsLocation.putExtra("lat", location.getLatitude());
-            gpsLocation.putExtra("lng", location.getLongitude());
-            gpsLocation.putExtra("speed_ms", location.getSpeed());
-            gpsLocation.putExtra("accuracy", location.getAccuracy());
-            sendBroadcast(gpsLocation);
-
-            if (ctrls.size() > 0) {
-                Ctrl closestCtrl = null;
-                int minDist = Integer.MAX_VALUE;
-                for (Ctrl ctrl : ctrls) {
-                    int tmpDist = (int) GeographicUtils.distanceBetweenGeoPositionsInMeters(
-                            ctrl.getLatLng().latitude, ctrl.getLatLng().longitude,
-                            location.getLatitude(), location.getLongitude());
-                    Log.d(TAG, "onLocationChanged: tmpDist=" + tmpDist);
-                    if (tmpDist < minDist) {
-                        minDist = tmpDist;
-                        closestCtrl = ctrl;
-                        Log.i(TAG, "onLocationChanged: found new closest ctrl: " + closestCtrl.toString());
-                    }
-                }
-
-                if (closestCtrl != null) {
-                    Intent ctrlWarning = new Intent(Const.FILTER_WARNING_CTRL);
-                    ctrlWarning.putExtra("ctrl_speed", closestCtrl.getSpeed());
-                    ctrlWarning.putExtra("ctrl_description", closestCtrl.getDescription());
-                    ctrlWarning.putExtra("distance", minDist);
-                    sendBroadcast(ctrlWarning);
-                } else {
-                    Log.w(TAG, "onLocationChanged: closestCtrl is null, this should not happen..");
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "onConnected: ");
-
-        if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // missing permission to get location
-            ToastUtils.toastLongFromBackground(R.string.permission_required_location);
-            sendBroadcastGpsState("CONNECTION FAILED (missing permissions)");
-            return;
-        }
-
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(GPS_UPDATE_FREQUENCY);
-        locationRequest.setFastestInterval(GPS_UPDATE_FREQUENCY - GPS_OFFSET_TIME);
-
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, locationRequest, this);
-
-        sendBroadcastGpsState("CONNECTED");
     }
 
     private void sendBroadcastGpsState(String which) {
         Intent intentGps = new Intent(Const.FILTER_GPS_UPDATE);
         intentGps.putExtra(Const.IE_GPS_STATE, which);
         sendBroadcast(intentGps);
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.w(TAG, "onConnectionSuspended: " + i);
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.e(TAG, "onConnectionFailed: " + connectionResult.getErrorMessage() + " | " + connectionResult.toString());
-        sendBroadcastGpsState("CONNECTION FAILED");
     }
 
     @Nullable

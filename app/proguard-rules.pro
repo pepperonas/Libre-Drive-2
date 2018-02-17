@@ -23,3 +23,24 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+# AndBasx
+-keep class com.pepperonas.jbasx.** { *; }
+-dontwarn com.pepperonas.jbasx.**
+-keep class com.pepperonas.andbasx.** { *; }
+-dontwarn com.pepperonas.andbasx.**
+
+# AesPrefs
+-keep class com.pepperonas.aesprefs.** { *; }
+-dontwarn com.pepperonas.aesprefs.**
+
+# MaterialDialog
+-keep class com.pepperonas.materialdialog.** { *; }
+-dontwarn com.pepperonas.materialdialog.**
+
+# Android Iconics
+-keep class .R
+-keep class **.R$* {
+    <fields>;
+}
