@@ -18,6 +18,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/green_200"
+    android:gravity="center"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_nearby_gps_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/AppTheme.Medium_Text" />
+
+    <TextView
+        android:id="@+id/tv_nearby_ctrl_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/AppTheme.Medium_Text" />
+
+    <TextView
+        android:id="@+id/tv_nearby_ctrl_speed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/AppTheme.Large_Text" />
+
+    <TextView
+        android:id="@+id/tv_nearby_distance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@style/AppTheme.Large_Text" />
 
 </LinearLayout>

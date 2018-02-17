@@ -24,6 +24,7 @@ package io.celox.app.libredrive2.utils;
 public class AesConst {
 
     public static final String PERMISSIONS_GRANTED = "permissions_granted";
-    public static final String CTRLS_DATABASE_LOADED = "ctrls_database_loaded";
+
     public static final String TOUCH_TWICE = "touch_twice";
+    public static final String PLAY_NOTIFICATION = "play_notification";
 }

@@ -30,6 +30,8 @@ public class Const {
     public static final String FILTER_LOCATION_BROADCAST = "filter_location_broadcast";
     public static final String IE_GPS_STATE = "ie_gps_state";
 
+    public static final String FILTER_WARNING_CTRL = "filter_warning_ctrl";
+
     public static final int CTRL_WARN_DISTANCE_IN_METERS = 500;
     public static final long DELAY_ON_BACK_PRESSED = 2000;
 

@@ -102,4 +102,13 @@ public class Ctrl {
     public void setDescription(@NonNull String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "Ctrl{" +
+                "latLng=" + latLng +
+                ", speed=" + speed +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

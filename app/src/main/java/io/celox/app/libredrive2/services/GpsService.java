@@ -40,12 +40,15 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.pepperonas.aespreferences.AesPrefs;
 import com.pepperonas.andbasx.base.ToastUtils;
+import com.pepperonas.jbasx.math.GeographicUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.celox.app.libredrive2.MainActivity;
 import io.celox.app.libredrive2.R;
-import io.celox.app.libredrive2.utils.AesConst;
+import io.celox.app.libredrive2.model.Ctrl;
 import io.celox.app.libredrive2.utils.Const;
 import io.celox.app.libredrive2.utils.DatabaseCtrls;
 
@@ -78,9 +81,7 @@ public class GpsService extends Service implements GoogleApiClient.ConnectionCal
                 .addOnConnectionFailedListener(this)
                 .build();
 
-        if (AesPrefs.getBoolean(AesConst.CTRLS_DATABASE_LOADED, false)) {
-            mDatabaseCtrls = new DatabaseCtrls(this);
-        }
+        mDatabaseCtrls = new DatabaseCtrls(this);
 
         mGoogleApiClient.connect();
     }
@@ -147,19 +148,44 @@ public class GpsService extends Service implements GoogleApiClient.ConnectionCal
         Log.i(TAG, "onLocationChanged: ");
 
         if (location != null) {
-            int ctrl = -1;
+            List<Ctrl> ctrls = new ArrayList<>();
             if (mDatabaseCtrls != null) {
-                ctrl = mDatabaseCtrls.isCloseToCtrl(location.getLatitude(), location.getLongitude(), Const.CTRL_WARN_DISTANCE_IN_METERS);
-                Log.w(TAG, "onCreate: " + ctrl);
+                ctrls = mDatabaseCtrls.getCtrlsInArea(location.getLatitude(), location.getLongitude(), Const.CTRL_WARN_DISTANCE_IN_METERS);
+                Log.w(TAG, "onLocationChanged: ctrls=" + ctrls.size());
             }
 
             Intent gpsLocation = new Intent(Const.FILTER_LOCATION_BROADCAST);
             gpsLocation.putExtra("lat", location.getLatitude());
             gpsLocation.putExtra("lng", location.getLongitude());
-            gpsLocation.putExtra("speed", location.getSpeed());
+            gpsLocation.putExtra("speed_ms", location.getSpeed());
             gpsLocation.putExtra("accuracy", location.getAccuracy());
-            gpsLocation.putExtra("ctrl", ctrl);
             sendBroadcast(gpsLocation);
+
+            if (ctrls.size() > 0) {
+                Ctrl closestCtrl = null;
+                int minDist = Integer.MAX_VALUE;
+                for (Ctrl ctrl : ctrls) {
+                    int tmpDist = (int) GeographicUtils.distanceBetweenGeoPositionsInMeters(
+                            ctrl.getLatLng().latitude, ctrl.getLatLng().longitude,
+                            location.getLatitude(), location.getLongitude());
+                    Log.d(TAG, "onLocationChanged: tmpDist=" + tmpDist);
+                    if (tmpDist < minDist) {
+                        minDist = tmpDist;
+                        closestCtrl = ctrl;
+                        Log.i(TAG, "onLocationChanged: found new closest ctrl: " + closestCtrl.toString());
+                    }
+                }
+
+                if (closestCtrl != null) {
+                    Intent ctrlWarning = new Intent(Const.FILTER_WARNING_CTRL);
+                    ctrlWarning.putExtra("ctrl_speed", closestCtrl.getSpeed());
+                    ctrlWarning.putExtra("ctrl_description", closestCtrl.getDescription());
+                    ctrlWarning.putExtra("distance", minDist);
+                    sendBroadcast(ctrlWarning);
+                } else {
+                    Log.w(TAG, "onLocationChanged: closestCtrl is null, this should not happen..");
+                }
+            }
         }
     }
 

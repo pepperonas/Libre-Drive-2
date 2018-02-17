@@ -34,4 +34,12 @@
         <item name="color">@android:color/white</item>
     </style>
 
+    <style name="AppTheme.Medium_Text" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">@color/grey800</item>
+    </style>
+
+    <style name="AppTheme.Large_Text" parent="TextAppearance.AppCompat.Large">
+        <item name="android:textColor">@color/grey800</item>
+    </style>
+
 </resources>

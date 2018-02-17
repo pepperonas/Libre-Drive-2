@@ -56,7 +56,17 @@ public class DialogChangelog {
         List<Changelog> changes = new ArrayList<>();
 
         changes.add(new Changelog(
-                "0.0.1-beta", "2018-02-09",
+                "0.0.1-beta", "2018-02-17",
+                new ReleaseInfo(
+                        "Show warnings in 'Nearby' fragment",
+                        "Play notification sounds",
+                        "Added new preferences",
+                        "Locked navigation view",
+                        "Added accessors to swipe in 'Map' fragment"
+                )));
+
+        changes.add(new Changelog(
+                "0.0.0-beta", "2018-02-09",
                 new ReleaseInfo(
                         "Initial release"
                 )));

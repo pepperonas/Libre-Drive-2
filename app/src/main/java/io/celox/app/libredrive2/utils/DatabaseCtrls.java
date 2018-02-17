@@ -33,8 +33,9 @@ import java.util.List;
 import io.celox.app.libredrive2.model.Ctrl;
 
 /**
- * @author Martin Pfeffer
- * <a href="mailto:martin.pfeffer@celox.io">martin.pfeffer@celox.io</a>
+ * The type Database ctrls.
+ *
+ * @author Martin Pfeffer <a href="mailto:martin.pfeffer@celox.io">martin.pfeffer@celox.io</a>
  * @see <a href="https://celox.io">https://celox.io</a>
  */
 public class DatabaseCtrls extends SQLiteAssetHelper {
@@ -48,6 +49,11 @@ public class DatabaseCtrls extends SQLiteAssetHelper {
 
     private Context mContext;
 
+    /**
+     * Instantiates a new Database ctrls.
+     *
+     * @param context the context
+     */
     public DatabaseCtrls(Context context) {
         super(context, Const.DB_NAME, null, 1);
         mContext = context;
@@ -58,14 +64,14 @@ public class DatabaseCtrls extends SQLiteAssetHelper {
     }
 
     /**
-     * Is close to ctrl int.
+     * Gets close ctrls.
      *
      * @param latitude  the latitude
      * @param longitude the longitude
      * @param range     the range
-     * @return the int
+     * @return the close ctrls
      */
-    public int isCloseToCtrl(double latitude, double longitude, int range) {
+    public int getCloseCtrls(double latitude, double longitude, int range) {
         if (mContext == null) {
             return -1;
         }
@@ -119,7 +125,8 @@ public class DatabaseCtrls extends SQLiteAssetHelper {
                 }
             } catch (Exception e) {
                 Log.e(TAG, "isCloseToCtrl: " + e.getMessage());
-
+            } finally {
+                cursor.close();
             }
         }
         Log.i(TAG, "getCtrlsInArea: " + ctrlList.toString());
@@ -149,12 +156,23 @@ public class DatabaseCtrls extends SQLiteAssetHelper {
         return area;
     }
 
+    /**
+     * Gets ctrl by id.
+     *
+     * @param id the id
+     * @return the ctrl by id
+     */
     public Cursor getCtrlById(int id) {
         String where = "id = " + id + "";
         SQLiteDatabase db = getReadableDatabase();
         return db.query(TABLE_CTRLS, null, where, null, null, null, null);
     }
 
+    /**
+     * Gets ctrls count.
+     *
+     * @return the ctrls count
+     */
     public int getCtrlsCount() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_CTRLS, null, null, null, null, null, null);
@@ -163,6 +181,11 @@ public class DatabaseCtrls extends SQLiteAssetHelper {
         return count;
     }
 
+    /**
+     * Insert ctrls.
+     *
+     * @param args the args
+     */
     public void insertCtrls(final Iterable<HashMap<String, String>> args) {
         final SQLiteDatabase db = getWritableDatabase();
         db.beginTransaction();

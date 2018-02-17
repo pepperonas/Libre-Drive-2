@@ -19,4 +19,6 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="map_ctrls_circle">@color/orange_A700</color>
+    <color name="grey800">@color/grey_800</color>
+    <color name="grey900">@color/grey_900</color>
 </resources>

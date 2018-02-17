@@ -52,6 +52,11 @@ public class SettingsFragment extends
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
+        //        addToolBarSpacingManually(v);
+        return v;
+    }
+
+    private void addToolBarSpacingManually(View v) {
         int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
         int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
         int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -60,7 +65,6 @@ public class SettingsFragment extends
         if (v != null) {
             v.setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
         }
-        return v;
     }
 
     @Override
@@ -117,21 +121,24 @@ public class SettingsFragment extends
         if (preference.getKey().equals(getString(R.string.TOUCH_TWICE_TO_EXIT))) {
             AesPrefs.putBoolean(AesConst.TOUCH_TWICE, ((CheckBoxPreference) preference).isChecked());
         }
+        if (preference.getKey().equals(getString(R.string.PLAY_NOTIFICATION))) {
+            AesPrefs.putBoolean(AesConst.PLAY_NOTIFICATION, ((CheckBoxPreference) preference).isChecked());
+        }
         return true;
     }
 
     @Override
     public boolean onPreferenceChange(Preference preference, final Object newValue) {
-        //       if (preference.getKey().equals(getString(R.string.OBD_SAMPLING_RATE))) {
-        //            AesPrefs.put(AesConst.OBD_SAMPLING_RATE, (String) newValue);
-        //        }
         updateSummaries();
 
         return true;
     }
 
     private void updateSummaries() {
-        // TODO: 09.02.18 03:55 implement
+        ((CheckBoxPreference) findPreference(getString(R.string.TOUCH_TWICE_TO_EXIT))).setChecked(
+                AesPrefs.getBoolean(AesConst.TOUCH_TWICE, true));
+        ((CheckBoxPreference) findPreference(getString(R.string.PLAY_NOTIFICATION))).setChecked(
+                AesPrefs.getBoolean(AesConst.PLAY_NOTIFICATION, true));
     }
 
     private void addPrefIcons() {

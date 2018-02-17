@@ -28,6 +28,11 @@
             android:summary="@string/pref_sum_touch_twice_to_exit"
             android:title="@string/pref_title_touch_twice_to_exit" />
 
+        <CheckBoxPreference
+            android:key="@string/PLAY_NOTIFICATION"
+            android:summary="@string/pref_sum_play_notification"
+            android:title="@string/pref_title_play_notification" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

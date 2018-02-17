@@ -17,6 +17,10 @@
 package io.celox.app.libredrive2.utils;
 
 import android.content.Context;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,11 +36,16 @@ import io.celox.app.libredrive2.R;
  */
 public class Utils {
 
-    public static String getBuildVersion(Context context) {
+    public static String getBuildVersion(@NonNull Context context) {
         String summary = BuildConfig.VERSION_NAME + "-" + context.getString(R.string.flv_variant);
         Date date = new Date(BuildConfig.APP_CREATED);
         SimpleDateFormat sdf = new SimpleDateFormat("yy.MM.dd.HH.mm.ss", Locale.GERMANY);
         return summary + "-" + sdf.format(date);
     }
 
+    public static void playNotification(@NonNull Context context) {
+        Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        Ringtone r = RingtoneManager.getRingtone(context, notification);
+        r.play();
+    }
 }

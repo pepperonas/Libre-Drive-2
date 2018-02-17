@@ -38,9 +38,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.pepperonas.aespreferences.AesPrefs;
 import com.pepperonas.andbasx.base.ToastUtils;
+
+import java.text.MessageFormat;
 
 import io.celox.app.libredrive2.custom.BottomBarAdapter;
 import io.celox.app.libredrive2.fragments.AboutFragment;
@@ -51,6 +54,7 @@ import io.celox.app.libredrive2.services.GpsService;
 import io.celox.app.libredrive2.utils.AesConst;
 import io.celox.app.libredrive2.utils.Const;
 import io.celox.app.libredrive2.utils.DatabaseCtrls;
+import io.celox.app.libredrive2.utils.Utils;
 
 /**
  * The type Main activity.
@@ -84,18 +88,61 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private BroadcastReceiver mLocationChangedReceiver = new BroadcastReceiver() {
-
+        @SuppressWarnings("unused")
         private static final String TAG = "LocationChangedReceiver";
 
         @Override
         public void onReceive(Context context, Intent intent) {
             double lat = intent.getDoubleExtra("lat", 0L);
             double lng = intent.getDoubleExtra("lng", 0L);
-            float speed = intent.getFloatExtra("speed", 0F);
+            float speedMs = intent.getFloatExtra("speed_ms", 0F);
+            int speedKmh = (int) (speedMs * 3.6f);
             float accuracy = intent.getFloatExtra("accuracy", 0F);
-            int ctrls = intent.getIntExtra("ctrl", -1);
 
-            Log.i(TAG, "onReceive: lat=" + lat + ", lng=" + lng + ", speed=" + speed + ", accuracy=" + accuracy + ", ctrls=" + ctrls);
+            Log.i(TAG, "onReceive: lat=" + lat + ", lng=" + lng + ", speedMs=" + speedMs + ", accuracy=" + accuracy);
+
+            TextView tvGpsSpeed = findViewById(R.id.tv_nearby_gps_speed);
+            if (tvGpsSpeed != null) {
+                tvGpsSpeed.setText(MessageFormat.format("{0} km/h", speedKmh));
+            }
+        }
+    };
+
+    private BroadcastReceiver mCtrlReceiver = new BroadcastReceiver() {
+        @SuppressWarnings("unused")
+        private static final String TAG = "CtrlReceiver";
+
+        public long mLastNotificationPlayed = System.currentTimeMillis();
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int ctrlSpeed = intent.getIntExtra("ctrl_speed", 0);
+            String ctrlDescription = intent.getStringExtra("ctrl_description");
+            int distance = intent.getIntExtra("distance", 0);
+
+            TextView tvCtrlDescription = findViewById(R.id.tv_nearby_ctrl_description);
+            TextView tvCtrlSpeed = findViewById(R.id.tv_nearby_ctrl_speed);
+            TextView tvDistance = findViewById(R.id.tv_nearby_distance);
+            if (tvCtrlDescription != null) {
+                tvCtrlDescription.setText(ctrlDescription);
+            }
+            if (tvCtrlSpeed != null) {
+                tvCtrlSpeed.setText(MessageFormat.format("{0} km/h", ctrlSpeed));
+            }
+            if (tvDistance != null) {
+                tvDistance.setText(MessageFormat.format("{0} m", distance));
+            }
+
+            if (AesPrefs.getBooleanRes(R.string.PLAY_NOTIFICATION, true)) {
+                long delta = getResources().getInteger(R.integer.delta_time_between_notifications_sec) * 1000L;
+                if ((mLastNotificationPlayed + delta) < System.currentTimeMillis()) {
+                    Log.i(TAG, "onReceive: playing notification...");
+                    mLastNotificationPlayed = System.currentTimeMillis();
+                    Utils.playNotification(getApplicationContext());
+                } else {
+                    Log.i(TAG, "onReceive: skipping notification...");
+                }
+            }
         }
     };
 
@@ -213,6 +260,10 @@ public class MainActivity extends AppCompatActivity {
                 R.string.nav_drawer_open, R.string.nav_drawer_close
         );
         mDrawerLayout.addDrawerListener(drawerToggle);
+        // disable navigation view
+        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        drawerToggle.syncState();
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -221,7 +272,6 @@ public class MainActivity extends AppCompatActivity {
             Log.w(TAG, "onCreate: Missing ActionBar...");
         }
 
-        drawerToggle.syncState();
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(mOnNavigationViewItemSelectedListener);
     }
@@ -251,6 +301,7 @@ public class MainActivity extends AppCompatActivity {
         stopGpsService();
 
         unregisterReceiver(mLocationChangedReceiver);
+        unregisterReceiver(mCtrlReceiver);
         unregisterReceiver(mGpsStateReceiver);
 
         super.onDestroy();
@@ -300,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
         startGpsService();
 
         registerReceiver(mLocationChangedReceiver, new IntentFilter(Const.FILTER_LOCATION_BROADCAST));
+        registerReceiver(mCtrlReceiver, new IntentFilter(Const.FILTER_WARNING_CTRL));
         registerReceiver(mGpsStateReceiver, new IntentFilter(Const.FILTER_GPS_UPDATE));
     }
 
@@ -313,7 +365,6 @@ public class MainActivity extends AppCompatActivity {
             String[] permissions = new String[]{
                     android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    //                    android.Manifest.permission.READ_PHONE_STATE
             };
             ActivityCompat.requestPermissions(this, permissions, PERMISSION_INITIAL_REQUEST);
         } else {
