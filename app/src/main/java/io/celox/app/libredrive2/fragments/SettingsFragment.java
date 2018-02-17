@@ -21,7 +21,6 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,20 +50,7 @@ public class SettingsFragment extends
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, container, savedInstanceState);
-        //        addToolBarSpacingManually(v);
-        return v;
-    }
-
-    private void addToolBarSpacingManually(View v) {
-        int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-        int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-        int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
-                (int) getResources().getDimension(R.dimen.activity_vertical_margin), getResources().getDisplayMetrics());
-
-        if (v != null) {
-            v.setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
-        }
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -83,10 +69,6 @@ public class SettingsFragment extends
 
         PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference(getString(R.string.PREF_CAT_LOCKED));
         preferenceCategory.setEnabled(false);
-
-        //        AesPrefs.setChangeListenersOnPreferences(this,
-        //                preference);
-        //
 
         updateSummaries();
     }
