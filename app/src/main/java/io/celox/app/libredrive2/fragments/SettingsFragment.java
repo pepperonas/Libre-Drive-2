@@ -79,6 +79,7 @@ public class SettingsFragment extends
         addBuildPref();
 
         findPreference(getString(R.string.TOUCH_TWICE_TO_EXIT)).setOnPreferenceClickListener(this);
+        findPreference(getString(R.string.PLAY_NOTIFICATION)).setOnPreferenceClickListener(this);
 
         PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference(getString(R.string.PREF_CAT_LOCKED));
         preferenceCategory.setEnabled(false);
