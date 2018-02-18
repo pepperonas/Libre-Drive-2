@@ -12,8 +12,8 @@
 
 #### Screenshots (300x539)
 
-![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/screenshots/sc_001.png "LD2 - Map")
-![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/screenshots/sc_002.png "LD2 - Settings")
+![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/pics/screenshots/sc_001.png "LD2 - Map")
+![Screenshot](https://github.com/pepperonas/Libre-Drive-2/blob/master/files/pics/screenshots/sc_002.png "LD2 - Settings")
 
 
 #### Features
