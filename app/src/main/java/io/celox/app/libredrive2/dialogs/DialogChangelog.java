@@ -62,7 +62,9 @@ public class DialogChangelog {
                         "Play notification sounds",
                         "Added new preferences",
                         "Locked navigation view",
-                        "Added accessors to swipe in 'Map' fragment"
+                        "Added accessors to swipe in 'Map' fragment",
+                        "Added Text-To-Speech",
+                        "Added German translation"
                 )));
 
         changes.add(new Changelog(

@@ -35,10 +35,8 @@
 
     <!--Navigation View-->
     <string name="navigation_view_header_title">Header</string>
-    <string name="developer_name">Martin Pfeffer</string>
-    <string name="developer_email">martin.pfeffer@celox.io</string>
-    <string name="nav_drawer_open">open</string>
-    <string name="nav_drawer_close">close</string>
+    <string name="nav_drawer_open">Open</string>
+    <string name="nav_drawer_close">Close</string>
     <string name="permissions_missing">Missing permission(s)</string>
     <string name="gps_service_notification_title">Scanning…</string>
     <string name="service_notification_content">No warnings around your position.</string>
@@ -48,9 +46,9 @@
     <string name="settings">Settings</string>
     <string name="nearby">Nearby</string>
     <string name="about">About</string>
-    <string name="menu_map_unlock">Unlock</string>
+    <string name="menu_map_unlock">Unlock map</string>
+    <string name="menu_map_lock">Lock map</string>
     <string name="menu_traffic_disable">Disable traffic</string>
-    <string name="menu_map_lock">Lock</string>
     <string name="menu_traffic_enable">Enable traffic</string>
     <string name="your_position">Your position</string>
 
