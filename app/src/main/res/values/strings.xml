@@ -17,7 +17,11 @@
 <resources>
 
     <!--General-->
-    <string name="app_name">Libre Drive 2</string>
+
+    <!--TTS-->
+    <string name="warning_in">Warning in</string>
+    <string name="meters">meters</string>
+    <string name="warning_at_your_position">Warning at your position</string>
 
     <!--Bottom Navigation-->
     <string name="bottom_nav_nearby">Nearby</string>
@@ -49,8 +53,6 @@
     <string name="menu_map_lock">Lock</string>
     <string name="menu_traffic_enable">Enable traffic</string>
     <string name="your_position">Your position</string>
-    <string name="max">max.</string>
-    <string name="kmh">km/h</string>
 
     <!--Dialogs-->
     <string name="dlg_title_changelog">Changelog</string>
@@ -64,7 +66,7 @@
     <string name="pref_title_touch_twice_to_exit">Leaving the app</string>
     <string name="pref_sum_touch_twice_to_exit">Touch BACK-Button twice</string>
     <string name="pref_title_play_notification">Play notification</string>
-    <string name="pref_sum_play_notification" />
+    <string name="pref_title_play_tts">Play Text-to-speech</string>
     <string name="pref_title_changelog">Changelog</string>
     <string name="pref_title_build_version">Build Version</string>
     <string name="pref_title_locked_pref">Locked Preference</string>

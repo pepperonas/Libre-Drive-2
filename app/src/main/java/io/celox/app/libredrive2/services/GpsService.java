@@ -39,6 +39,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.pepperonas.andbasx.base.ToastUtils;
 import com.pepperonas.jbasx.math.GeographicUtils;
 
@@ -76,9 +77,12 @@ public class GpsService extends Service {
         mDatabaseCtrls = new DatabaseCtrls(this);
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ToastUtils.toastLongFromBackground(R.string.permission_required_location);
-            sendBroadcastGpsState("CONNECTION FAILED (missing permissions)");
+            Intent intentGps = new Intent(Const.FILTER_GPS_UPDATE);
+            intentGps.putExtra(Const.IE_GPS_STATE, "CONNECTION FAILED (missing permissions)");
+            sendBroadcast(intentGps);
             return;
         }
 
@@ -88,14 +92,14 @@ public class GpsService extends Service {
         locationRequest.setFastestInterval(GPS_UPDATE_FREQUENCY - GPS_OFFSET_TIME);
 
         mFusedLocationClient.requestLocationUpdates(locationRequest, mLocationCallback, Looper.myLooper());
-        //        mFusedLocationClient.getLastLocation()
-        //                .addOnSuccessListener(new OnSuccessListener<Location>() {
-        //                    @Override
-        //                    public void onSuccess(Location location) {
-        //                        if (location != null) {
-        //                        }
-        //                    }
-        //                });
+        mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    Log.v(TAG, "onSuccess: lat=" + location.getLatitude() + " lng=" + location.getLongitude());
+                }
+            }
+        });
     }
 
     LocationCallback mLocationCallback = new LocationCallback() {
@@ -149,7 +153,7 @@ public class GpsService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand");
 
-        String channelId = "io.celox.libredrive";
+        String channelId = "io.celox.libredrive2";
         String channelName = "GPS channel";
         NotificationChannel notificationChannel;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -199,12 +203,6 @@ public class GpsService extends Service {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
         super.onDestroy();
-    }
-
-    private void sendBroadcastGpsState(String which) {
-        Intent intentGps = new Intent(Const.FILTER_GPS_UPDATE);
-        intentGps.putExtra(Const.IE_GPS_STATE, which);
-        sendBroadcast(intentGps);
     }
 
     @Nullable

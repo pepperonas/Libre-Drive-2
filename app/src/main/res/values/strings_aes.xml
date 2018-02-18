@@ -17,14 +17,15 @@
 <resources>
 
     <!--Preference fragment-->
-    <string name="PREF_SCR_MAIN">pref_scr_main</string>
-    <string name="PREF_CAT_MAIN">pref_cat_main</string>
-    <string name="PREF_CAT_MORE">pref_cat_more</string>
-    <string name="PREF_CAT_LOCKED">pref_cat_locked</string>
-    <string name="TOUCH_TWICE_TO_EXIT">touch_twice_to_exit</string>
-    <string name="CHANGELOG">changelog</string>
-    <string name="BUILD_VERSION">build_version</string>
-    <string name="LOCKED_PREF">locked_pref</string>
+    <string name="PREF_SCR_MAIN" translatable="false">pref_scr_main</string>
+    <string name="PREF_CAT_MAIN" translatable="false">pref_cat_main</string>
+    <string name="PREF_CAT_MORE" translatable="false">pref_cat_more</string>
+    <string name="PREF_CAT_LOCKED" translatable="false">pref_cat_locked</string>
+    <string name="TOUCH_TWICE_TO_EXIT" translatable="false">touch_twice_to_exit</string>
+    <string name="CHANGELOG" translatable="false">changelog</string>
+    <string name="BUILD_VERSION" translatable="false">build_version</string>
+    <string name="LOCKED_PREF" translatable="false">locked_pref</string>
     <string name="PLAY_NOTIFICATION" translatable="false">play_notification</string>
+    <string name="PLAY_TTS" translatable="false">play_tts</string>
 
 </resources>

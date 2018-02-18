@@ -27,4 +27,5 @@ public class AesConst {
 
     public static final String TOUCH_TWICE = "touch_twice";
     public static final String PLAY_NOTIFICATION = "play_notification";
+    public static final String PLAY_TTS = "play_tts";
 }

@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -113,6 +114,10 @@ public class MainActivity extends AppCompatActivity {
         private static final String TAG = "CtrlReceiver";
 
         public long mLastNotificationPlayed = System.currentTimeMillis();
+        public long mLastTts500MeterPlayed = System.currentTimeMillis();
+        public long mLastTts200MeterPlayed = System.currentTimeMillis();
+        public long mLastTtsAtYourPosition = System.currentTimeMillis();
+        public int mLastDistance = Integer.MAX_VALUE;
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -142,6 +147,48 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.i(TAG, "onReceive: skipping notification...");
                 }
+            }
+
+            if (AesPrefs.getBooleanRes(R.string.PLAY_TTS, true)) {
+                String message = null;
+                if (distance < 550 && distance > 450) {
+                    long delta = getResources().getInteger(R.integer.delta_time_between_notifications_sec) * 1000L;
+                    if ((mLastTts500MeterPlayed + delta) < System.currentTimeMillis()) {
+                        if (mLastDistance > distance) {
+                            Log.i(TAG, "onReceive: playing tts '500'...");
+                            mLastTts500MeterPlayed = System.currentTimeMillis();
+                            message = getString(R.string.warning_in) + " 500 " + getString(R.string.meters) + ".";
+                        }
+                    }
+                } else if (distance < 250 && distance > 150) {
+                    long delta = getResources().getInteger(R.integer.delta_time_between_notifications_sec) * 1000L;
+                    if ((mLastTts200MeterPlayed + delta) < System.currentTimeMillis()) {
+                        if (mLastDistance > distance) {
+                            Log.i(TAG, "onReceive: playing tts '200'...");
+                            mLastTts200MeterPlayed = System.currentTimeMillis();
+                            message = getString(R.string.warning_in) + " 200 " + getString(R.string.meters) + ".";
+                        }
+                    }
+                } else if (distance < 100 && distance > 40) {
+                    long delta = getResources().getInteger(R.integer.delta_time_between_notifications_sec) * 1000L;
+                    if ((mLastTtsAtYourPosition + delta) < System.currentTimeMillis()) {
+                        if (mLastDistance > distance) {
+                            Log.i(TAG, "onReceive: playing tts '200'...");
+                            mLastTtsAtYourPosition = System.currentTimeMillis();
+                            message = getString(R.string.warning_at_your_position) + ".";
+                        }
+                    }
+                }
+
+                if (message != null) {
+                    try {
+                        mTextToSpeech.speak(message, TextToSpeech.QUEUE_FLUSH, null);
+                    } catch (Exception e) {
+                        Log.e(TAG, "onReceive: ", e);
+                    }
+                }
+
+                mLastDistance = distance;
             }
         }
     };
@@ -194,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+    private TextToSpeech mTextToSpeech;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,6 +322,13 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(mOnNavigationViewItemSelectedListener);
+
+        mTextToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                Log.i(TAG, "onInit: status=" + status);
+            }
+        });
     }
 
     @Override

@@ -16,6 +16,10 @@
 
 <resources>
 
+    <string name="app_name" translatable="false">Libre Drive 2</string>
+
     <string name="empty" translatable="false" />
+    <string name="max" translatable="false">max.</string>
+    <string name="kmh" translatable="false">km/h</string>
 
 </resources>

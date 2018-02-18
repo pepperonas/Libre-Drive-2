@@ -30,8 +30,13 @@
 
         <CheckBoxPreference
             android:key="@string/PLAY_NOTIFICATION"
-            android:summary="@string/pref_sum_play_notification"
+            android:summary="@string/empty"
             android:title="@string/pref_title_play_notification" />
+
+        <CheckBoxPreference
+            android:key="@string/PLAY_TTS"
+            android:summary="@string/empty"
+            android:title="@string/pref_title_play_tts" />
 
     </PreferenceCategory>
 

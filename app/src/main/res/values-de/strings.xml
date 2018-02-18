@@ -17,7 +17,11 @@
 <resources>
 
     <!--General-->
-    <string name="app_name" translatable="false">Libre Drive 2</string>
+
+    <!--TTS-->
+    <string name="warning_in">Warnung in</string>
+    <string name="meters">Metern</string>
+    <string name="warning_at_your_position">Warnung in unmittelbarer Nähe</string>
 
     <!--Bottom Navigation-->
     <string name="bottom_nav_nearby">Nearby</string>
@@ -40,5 +44,32 @@
     <string name="service_notification_content">No warnings around your position.</string>
     <string name="permission_required_location">Missing permission \'ACCESS_FINE_LOCATION\'</string>
     <string name="touch_twice_to_close">Again to leave</string>
+    <string name="settings">Einstellungen</string>
+
+    <string name="map">Karte</string>
+    <string name="about">Über</string>
+    <string name="menu_map_unlock">Entsperren</string>
+    <string name="menu_map_lock">Sperren</string>
+    <string name="menu_traffic_disable">Verkehr deaktivieren</string>
+    <string name="menu_traffic_enable">Verkehr aktivieren</string>
+    <string name="your_position">Deine Position</string>
+
+    <!--Dialogs-->
+    <string name="dlg_title_changelog">Changelog</string>
+
+    <!--Preference Categories-->
+    <string name="pref_cat_main">Allgemein</string>
+    <string name="pref_cat_more">Mehr</string>
+    <string name="pref_cat_locked">gesperrt</string>
+
+    <!--User Settings-->
+    <string name="pref_title_touch_twice_to_exit">Verlassen der App</string>
+    <string name="pref_sum_touch_twice_to_exit">ZURÜCK-Button zweimal berühren</string>
+    <string name="pref_title_play_notification">Benachrichtigungston wiedergeben</string>
+    <string name="pref_title_play_tts">Sprachansagen wiedergeben</string>
+    <string name="pref_title_changelog">Changelog</string>
+    <string name="pref_title_build_version">Build Version</string>
+    <string name="pref_title_locked_pref">Gesperrte Einstellungen</string>
+    <string name="nearby">Umgebung</string>
 
 </resources>

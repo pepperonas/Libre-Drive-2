@@ -66,6 +66,7 @@ public class SettingsFragment extends
 
         findPreference(getString(R.string.TOUCH_TWICE_TO_EXIT)).setOnPreferenceClickListener(this);
         findPreference(getString(R.string.PLAY_NOTIFICATION)).setOnPreferenceClickListener(this);
+        findPreference(getString(R.string.PLAY_TTS)).setOnPreferenceClickListener(this);
 
         PreferenceCategory preferenceCategory = (PreferenceCategory) findPreference(getString(R.string.PREF_CAT_LOCKED));
         preferenceCategory.setEnabled(false);
@@ -107,6 +108,9 @@ public class SettingsFragment extends
         if (preference.getKey().equals(getString(R.string.PLAY_NOTIFICATION))) {
             AesPrefs.putBoolean(AesConst.PLAY_NOTIFICATION, ((CheckBoxPreference) preference).isChecked());
         }
+        if (preference.getKey().equals(getString(R.string.PLAY_TTS))) {
+            AesPrefs.putBoolean(AesConst.PLAY_TTS, ((CheckBoxPreference) preference).isChecked());
+        }
         return true;
     }
 
@@ -122,6 +126,8 @@ public class SettingsFragment extends
                 AesPrefs.getBoolean(AesConst.TOUCH_TWICE, true));
         ((CheckBoxPreference) findPreference(getString(R.string.PLAY_NOTIFICATION))).setChecked(
                 AesPrefs.getBoolean(AesConst.PLAY_NOTIFICATION, true));
+        ((CheckBoxPreference) findPreference(getString(R.string.PLAY_TTS))).setChecked(
+                AesPrefs.getBoolean(AesConst.PLAY_TTS, true));
     }
 
     private void addPrefIcons() {
