@@ -22,7 +22,7 @@
 
     <View
         android:id="@+id/swipe_accessor_l"
-        android:layout_width="4dp"
+        android:layout_width="8dp"
         android:layout_height="match_parent"
         android:background="@color/green_200" />
 
@@ -35,7 +35,7 @@
 
     <View
         android:id="@+id/swipe_accessor_r"
-        android:layout_width="4dp"
+        android:layout_width="8dp"
         android:layout_height="match_parent"
         android:background="@color/grey_50" />
 

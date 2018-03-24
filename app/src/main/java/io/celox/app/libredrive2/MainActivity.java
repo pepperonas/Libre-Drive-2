@@ -26,19 +26,17 @@ import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.GravityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.pepperonas.aespreferences.AesPrefs;
@@ -71,10 +69,53 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSION_INITIAL_REQUEST = 1;
 
     private ViewPager mViewPager;
-    private DrawerLayout mDrawerLayout;
 
     private DatabaseCtrls mDatabaseCtrls;
     private boolean mIsExitPressedOnce = false;
+
+    private long mLastWarningReceived = System.currentTimeMillis();
+
+    private int mCtrDistanceGrown = 0;
+
+    private Handler mHandlerMainDriver = new Handler();
+    private Runnable mMainDriver = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                ensureResetWarning();
+            } finally {
+                mHandlerMainDriver.postDelayed(mMainDriver, Const.INTERVAL_MAIN_DRIVER);
+            }
+        }
+    };
+
+    private void ensureResetWarning() {
+        if ((mLastWarningReceived + Const.DELAY_RESET_WARNING) < System.currentTimeMillis()
+                || mCtrDistanceGrown >= Const.COUNTER_MOVE_FURTHER_AWAY) {
+
+            TextView tvCtrlDescription = findViewById(R.id.tv_nearby_ctrl_description);
+            TextView tvCtrlSpeed = findViewById(R.id.tv_nearby_ctrl_speed);
+            TextView tvDistance = findViewById(R.id.tv_nearby_distance);
+            LinearLayout llNearby = findViewById(R.id.ll_nearby);
+            if (tvCtrlDescription != null) {
+                tvCtrlDescription.setText("");
+            }
+            if (tvCtrlSpeed != null) {
+                tvCtrlSpeed.setText("");
+            }
+            if (tvDistance != null) {
+                tvDistance.setText("");
+            }
+            if (llNearby != null) {
+                llNearby.setBackgroundColor(ContextCompat.getColor(this, R.color.green_200));
+            }
+
+            View swipeAccessor = findViewById(R.id.swipe_accessor_l);
+            if (swipeAccessor != null) {
+                swipeAccessor.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.green_200));
+            }
+        }
+    }
 
     private BroadcastReceiver mGpsStateReceiver = new BroadcastReceiver() {
 
@@ -121,13 +162,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            mLastWarningReceived = System.currentTimeMillis();
+
             int ctrlSpeed = intent.getIntExtra("ctrl_speed", 0);
             String ctrlDescription = intent.getStringExtra("ctrl_description");
             int distance = intent.getIntExtra("distance", 0);
 
+            if (distance > mLastDistance) {
+                mCtrDistanceGrown++;
+            } else {
+                mCtrDistanceGrown = 0;
+            }
+
+            if (mCtrDistanceGrown >= Const.COUNTER_MOVE_FURTHER_AWAY) {
+                Log.i(TAG, "onReceive: moved 3 times further away, will return.");
+                mLastDistance = distance;
+                return;
+            }
+
             TextView tvCtrlDescription = findViewById(R.id.tv_nearby_ctrl_description);
             TextView tvCtrlSpeed = findViewById(R.id.tv_nearby_ctrl_speed);
             TextView tvDistance = findViewById(R.id.tv_nearby_distance);
+            LinearLayout llNearby = findViewById(R.id.ll_nearby);
             if (tvCtrlDescription != null) {
                 tvCtrlDescription.setText(ctrlDescription);
             }
@@ -136,6 +192,14 @@ public class MainActivity extends AppCompatActivity {
             }
             if (tvDistance != null) {
                 tvDistance.setText(MessageFormat.format("{0} m", distance));
+            }
+            if (llNearby != null) {
+                llNearby.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.red_200));
+            }
+
+            View swipeAccessor = findViewById(R.id.swipe_accessor_l);
+            if (swipeAccessor != null) {
+                swipeAccessor.setBackgroundColor(ContextCompat.getColor(MainActivity.this, R.color.red_200));
             }
 
             if (AesPrefs.getBooleanRes(R.string.PLAY_NOTIFICATION, true)) {
@@ -219,28 +283,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private NavigationView.OnNavigationItemSelectedListener
-            mOnNavigationViewItemSelectedListener = new NavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            item.setChecked(true);
-            mDrawerLayout.closeDrawers();
-
-            switch (item.getItemId()) {
-                case R.id.drawer_nearby:
-                    mViewPager.setCurrentItem(0);
-                    return true;
-                case R.id.drawer_map:
-                    mViewPager.setCurrentItem(1);
-                    return true;
-                case R.id.drawer_settings:
-                    mViewPager.setCurrentItem(2);
-                    // TODO: create preference fragment
-                    return true;
-            }
-            return false;
-        }
-    };
     private TextToSpeech mTextToSpeech;
 
     @Override
@@ -302,26 +344,6 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(
-                this, mDrawerLayout, toolbar,
-                R.string.nav_drawer_open, R.string.nav_drawer_close
-        );
-        mDrawerLayout.addDrawerListener(drawerToggle);
-        // disable navigation view
-        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
-        drawerToggle.syncState();
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-        } else {
-            Log.w(TAG, "onCreate: Missing ActionBar...");
-        }
-
-        NavigationView navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(mOnNavigationViewItemSelectedListener);
 
         mTextToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
@@ -329,6 +351,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.i(TAG, "onInit: status=" + status);
             }
         });
+
+        startMainDriver();
     }
 
     @Override
@@ -342,7 +366,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
 
@@ -355,6 +378,8 @@ public class MainActivity extends AppCompatActivity {
 
         stopGpsService();
 
+        stopMainDriver();
+
         unregisterReceiver(mLocationChangedReceiver);
         unregisterReceiver(mCtrlReceiver);
         unregisterReceiver(mGpsStateReceiver);
@@ -364,13 +389,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer == null) return;
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            touchTwiceToExit();
-        }
+        touchTwiceToExit();
     }
 
     /**
@@ -437,16 +456,6 @@ public class MainActivity extends AppCompatActivity {
         stopService(serviceIntent);
     }
 
-    protected boolean isNavDrawerOpen() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START);
-    }
-
-    protected void closeNavDrawer() {
-        if (mDrawerLayout != null) {
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-        }
-    }
-
     /**
      * Callback received when a permissions request has been completed.
      */
@@ -470,6 +479,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "onRequestPermissionsResult: " + e.getMessage());
         }
+    }
+
+    void startMainDriver() {
+        mMainDriver.run();
+    }
+
+    void stopMainDriver() {
+        mHandlerMainDriver.removeCallbacks(mMainDriver);
     }
 
     public DatabaseCtrls getDatabaseCtrls() {

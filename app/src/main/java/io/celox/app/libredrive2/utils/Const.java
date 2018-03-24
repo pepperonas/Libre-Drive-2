@@ -39,4 +39,7 @@ public class Const {
     public static final int MAX_CTRLS_IN_MAP = 500;
     public static final double MAP_MARKER_RADIUS = 30d;
     public static final int NAV_DRAWER_ICON_SIZE = 24;
+    public static final long INTERVAL_MAIN_DRIVER = 1000;
+    public static final long DELAY_RESET_WARNING = 60 * 1000;
+    public static final int COUNTER_MOVE_FURTHER_AWAY = 3;
 }

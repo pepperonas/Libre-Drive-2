@@ -35,8 +35,9 @@
 
 - ~~Preference Fragment~~
 - Draw overlay to show warnings
-- Play sounds
-- Add preference
+- ~~Play sounds~~
+- ~~Add preference~~
+- Improve notification
 - Show trip information
 - Testing...
 

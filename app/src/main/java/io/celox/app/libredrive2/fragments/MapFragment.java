@@ -184,6 +184,7 @@ public class MapFragment extends android.support.v4.app.Fragment implements OnMa
         } catch (Exception e) {
             Log.e(TAG, "onPrepareOptionsMenu: Missing option 'Enable traffic'.");
         }
+
     }
 
     @Override

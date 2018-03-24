@@ -32,6 +32,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -68,6 +69,8 @@ public class GpsService extends Service {
 
     private DatabaseCtrls mDatabaseCtrls;
     private FusedLocationProviderClient mFusedLocationClient;
+    private NotificationCompat.Builder mNotificationBuilder;
+    private NotificationManager mNotificationManager;
 
     @Override
     public void onCreate() {
@@ -141,6 +144,16 @@ public class GpsService extends Service {
                         ctrlWarning.putExtra("ctrl_description", closestCtrl.getDescription());
                         ctrlWarning.putExtra("distance", minDist);
                         sendBroadcast(ctrlWarning);
+
+                        String speedInfo;
+                        if (closestCtrl.getSpeed() != 0) {
+                            speedInfo = " (" + closestCtrl.getSpeed() + " " + getString(R.string.kmh) + ")";
+                        } else {
+                            speedInfo = "";
+                        }
+                        mNotificationBuilder.setContentTitle(getString(R.string.warning_in) + " " + minDist + " " + getString(R.string.meters));
+                        mNotificationBuilder.setContentText(closestCtrl.getDescription() + speedInfo);
+                        mNotificationManager.notify(START_FOREGROUND_ID, mNotificationBuilder.build());
                     } else {
                         Log.w(TAG, "onLocationChanged: closestCtrl is null, this should not happen..");
                     }
@@ -162,33 +175,31 @@ public class GpsService extends Service {
             notificationChannel.setLightColor(Color.RED);
             notificationChannel.setShowBadge(true);
             notificationChannel.setLockscreenVisibility(Notification.BADGE_ICON_NONE);
-            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            if (manager != null) {
-                manager.createNotificationChannel(notificationChannel);
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            if (mNotificationManager != null) {
+                mNotificationManager.createNotificationChannel(notificationChannel);
             }
         }
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        Notification notification;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            notification = new Notification.Builder(getApplicationContext(), channelId)
+            mNotificationBuilder = new NotificationCompat.Builder(getApplicationContext(), channelId)
                     .setContentTitle(getString(R.string.gps_service_notification_title))
                     .setChannelId(channelId)
                     .setContentText(getString(R.string.service_notification_content))
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setLargeIcon(icon)
-                    .build();
+                    .setLargeIcon(icon);
         } else {
-            notification = new Notification.Builder(getApplicationContext())
+            mNotificationBuilder = new NotificationCompat.Builder(getApplicationContext())
                     .setContentTitle(getString(R.string.gps_service_notification_title))
                     .setContentText(getString(R.string.service_notification_content))
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setLargeIcon(icon)
-                    .build();
+                    .setLargeIcon(icon);
         }
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Notification notification = mNotificationBuilder.build();
         notification.contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, 0);
 
         startForeground(START_FOREGROUND_ID, notification);

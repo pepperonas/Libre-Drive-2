@@ -30,7 +30,6 @@ import com.mikepenz.iconics.IconicsDrawable;
 import com.pepperonas.aespreferences.AesPrefs;
 import com.pepperonas.andbasx.base.ToastUtils;
 
-import io.celox.app.libredrive2.MainActivity;
 import io.celox.app.libredrive2.R;
 import io.celox.app.libredrive2.dialogs.DialogChangelog;
 import io.celox.app.libredrive2.utils.AesConst;
@@ -77,13 +76,6 @@ public class SettingsFragment extends
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        MainActivity main = (MainActivity) getActivity();
-        if (main != null) {
-            main.setTitle(getString(R.string.settings));
-        } else {
-            Log.w(TAG, "onActivityCreated: missing activity.");
-        }
     }
 
     @Override
