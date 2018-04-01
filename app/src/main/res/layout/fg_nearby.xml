@@ -26,6 +26,7 @@
         android:id="@+id/tv_nearby_gps_speed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/_test_string"
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.Medium_Text" />
 
@@ -33,6 +34,7 @@
         android:id="@+id/tv_nearby_ctrl_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/_test_string"
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.Medium_Text" />
 
@@ -40,6 +42,7 @@
         android:id="@+id/tv_nearby_ctrl_speed"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/_test_string"
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.Large_Text" />
 
@@ -47,6 +50,7 @@
         android:id="@+id/tv_nearby_distance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/_test_string"
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.Large_Text" />
 
