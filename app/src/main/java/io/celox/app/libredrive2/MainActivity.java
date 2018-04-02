@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -36,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -182,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
             TextView tvCtrlDescription = findViewById(R.id.tv_nearby_ctrl_description);
             TextView tvCtrlSpeed = findViewById(R.id.tv_nearby_ctrl_speed);
+            ImageView ivCtrlSpeed = findViewById(R.id.iv_speed_limit);
             TextView tvDistance = findViewById(R.id.tv_nearby_distance);
             LinearLayout llNearby = findViewById(R.id.ll_nearby);
             if (tvCtrlDescription != null) {
@@ -189,6 +192,69 @@ public class MainActivity extends AppCompatActivity {
             }
             if (tvCtrlSpeed != null) {
                 tvCtrlSpeed.setText(MessageFormat.format("{0} km/h", ctrlSpeed));
+            }
+            if (ivCtrlSpeed != null) {
+                Drawable d = null;
+                switch (ctrlSpeed) {
+                    case 5:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_5);
+                        break;
+                    case 10:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_10);
+                        break;
+                    case 20:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_20);
+                        break;
+                    case 30:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_30);
+                        break;
+                    case 40:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_40);
+                        break;
+                    case 50:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_50);
+                        break;
+                    case 60:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_60);
+                        break;
+                    case 70:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_70);
+                        break;
+                    case 80:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_80);
+                        break;
+                    case 90:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_90);
+                        break;
+                    case 100:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_100);
+                        break;
+                    case 110:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_110);
+                        break;
+                    case 120:
+//                        d = ContextCompat.getDrawable(MainActivity.this,
+//                                R.drawable.traffic_sign_speed_limit_120);
+                        break;
+                    case 130:
+                        d = ContextCompat.getDrawable(MainActivity.this,
+                                R.drawable.traffic_sign_speed_limit_130);
+                        break;
+                    default:
+                }
+                ivCtrlSpeed.setImageDrawable(d);
             }
             if (tvDistance != null) {
                 tvDistance.setText(MessageFormat.format("{0} m", distance));

@@ -38,6 +38,12 @@
         android:textAlignment="center"
         android:textAppearance="@style/AppTheme.Medium_Text" />
 
+    <ImageView
+        android:id="@+id/iv_speed_limit"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_margin="8dp" />
+
     <TextView
         android:id="@+id/tv_nearby_ctrl_speed"
         android:layout_width="match_parent"
