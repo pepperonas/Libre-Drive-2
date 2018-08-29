@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:text="@string/_test_string"
         android:textAlignment="center"
-        android:textAppearance="@style/AppTheme.Medium_Text" />
+        android:textAppearance="@style/AppTheme.Medium_Text"
+        android:textSize="56sp"/>
 
     <TextView
         android:id="@+id/tv_nearby_ctrl_description"

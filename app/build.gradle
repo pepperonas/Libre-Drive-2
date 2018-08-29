@@ -28,16 +28,15 @@ repositories {
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "io.celox.app.libredrive2"
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "0.0.1-beta"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
         setProperty("archivesBaseName", "libredrive2-$versionName")
@@ -80,27 +79,27 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // google play
-    implementation 'com.google.android.gms:play-services-maps:12.0.1'
-    implementation 'com.google.android.gms:play-services-gcm:12.0.1'
-    implementation 'com.google.android.gms:play-services-location:12.0.1'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-gcm:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
 
     // project helper
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'org.jetbrains:annotations-java5:15.0'
-    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 
     // android design & support-lib
-    implementation 'com.android.support:recyclerview-v7:27.1.0'
-    implementation 'com.android.support:percent:27.1.0'
-    implementation 'com.android.support:appcompat-v7:27.1.0'
-    implementation 'com.android.support:design:27.1.0'
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
-    implementation 'com.android.support:support-vector-drawable:27.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:percent:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
 
     // testing
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     // pepperonas
     implementation 'com.github.pepperonas:materialdialog:0.3.4'
@@ -111,10 +110,10 @@ dependencies {
     //        compile(name: 'graphview', ext: 'aar')
 
     // icons
-    implementation 'com.mikepenz:iconics-core:2.9.3@aar'
+    implementation 'com.mikepenz:iconics-core:3.0.2@aar'
     implementation 'com.mikepenz:google-material-typeface:3.0.1.1.original@aar'
     implementation 'com.mikepenz:material-design-iconic-typeface:2.2.0.3@aar'
-    implementation 'com.mikepenz:community-material-typeface:1.8.36.1@aar'
+    implementation 'com.mikepenz:community-material-typeface:2.0.46.1@aar'
     implementation 'com.jjoe64:graphview:4.2.1'
 
     // preference fragment
