@@ -245,8 +245,8 @@ public class MainActivity extends AppCompatActivity {
                                 R.drawable.traffic_sign_speed_limit_110);
                         break;
                     case 120:
-//                        d = ContextCompat.getDrawable(MainActivity.this,
-//                                R.drawable.traffic_sign_speed_limit_120);
+                        //                        d = ContextCompat.getDrawable(MainActivity.this,
+                        //                                R.drawable.traffic_sign_speed_limit_120);
                         break;
                     case 130:
                         d = ContextCompat.getDrawable(MainActivity.this,

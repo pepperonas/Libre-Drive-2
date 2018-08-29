@@ -24,6 +24,8 @@
     <!-- storage -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
 
     <application
         android:name="io.celox.app.libredrive2.App"
@@ -34,6 +36,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAu2MbcW_GGS_d98peKkGvjGfchSuRnPAs" />
