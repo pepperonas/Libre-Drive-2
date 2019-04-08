@@ -1,6 +1,5 @@
-//noinspection GradleDependency
 /*
- * Copyright (c) 2018 Martin Pfeffer
+ * Copyright (c) 2019 Martin Pfeffer
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +14,7 @@
  * limitations under the License.
  */
 
+//noinspection GradleDependency
 apply plugin: 'com.android.application'
 
 repositories {
@@ -29,7 +29,7 @@ repositories {
 
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.2'
+    buildToolsVersion '28.0.3'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "io.celox.app.libredrive2"
